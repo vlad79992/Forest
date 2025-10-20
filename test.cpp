@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include "AVL_tree.hpp"
+#include "Binary_tree.hpp"
 
 int main()
 {

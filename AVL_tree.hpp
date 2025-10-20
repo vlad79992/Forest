@@ -130,6 +130,7 @@ inline void AVL_tree<Key>::big_left_turn()
 template<typename Key>
 inline void AVL_tree<Key>::append_tree(AVL_tree* tree)
 {
+	if (tree == nullptr) return;
 	if (tree->value < this->value)
 	{
 		if (this->left == nullptr)
@@ -232,9 +233,17 @@ template<typename Key>
 void AVL_tree<Key>::erase(const Key key)
 {
 	if (key < this->value && this->left != nullptr)
+	{
 		this->left->erase(key);
+		if (this->left != nullptr && this->left->size == 0)
+			delete(this->left);
+	}
 	else if (key > this->value && this->right != nullptr)
+	{
 		this->right->erase(key);
+		if (this->right != nullptr && this->right->size == 0)
+			delete(this->right);
+	}
 
 	if (key == this->value)
 	{
