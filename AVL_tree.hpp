@@ -29,6 +29,10 @@ public:
 	int  size();
 	int  height();
 
+	void print_prefix(std::ostream& os);
+	void print_infix(std::ostream& os);
+	void print_postfix(std::ostream& os);
+
 	friend std::ostream& operator<< (std::ostream& os, const AVL_tree<Key>& tree)
 	{
 		tree.print_json(os);
@@ -306,4 +310,28 @@ template<typename Key>
 inline int AVL_tree<Key>::height()
 {
 	return tree_height;
+}
+
+template<typename Key>
+inline void AVL_tree<Key>::print_prefix(std::ostream& os)
+{
+	os << this->value << ' ';
+	this->left->print_prefix(os) << ' ';
+	this->right->print_prefix(os) << ' ';
+}
+
+template<typename Key>
+inline void AVL_tree<Key>::print_infix(std::ostream& os)
+{
+	this->left->print_prefix(os) << ' ';
+	os << this->value << ' ';
+	this->right->print_prefix(os) << ' ';
+}
+
+template<typename Key>
+inline void AVL_tree<Key>::print_postfix(std::ostream& os)
+{
+	this->left->print_prefix(os) << ' ';
+	this->right->print_prefix(os) << ' ';
+	os << this->value << ' ';
 }

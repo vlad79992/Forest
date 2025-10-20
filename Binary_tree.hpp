@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 template<typename Key>
 class Binary_tree
@@ -15,6 +16,10 @@ public:
 	void erase(Key key);
 	bool contains(Key key);
 	void clear();
+
+	void print_prefix(std::ostream& os);
+	void print_infix(std::ostream& os);
+	void print_postfix(std::ostream& os);
 };
 
 template<typename Key>
@@ -45,6 +50,30 @@ inline void Binary_tree<Key>::append_tree(Binary_tree* tree)
 	}
 	this->size = ((this->left == nullptr) ? (0) : (this->left->size)) +
 		((this->right == nullptr) ? (0) : (this->right->size)) + 1;
+}
+
+template<typename Key>
+inline void Binary_tree<Key>::print_prefix(std::ostream& os)
+{
+	os << this->value << ' ';
+	this->left->print_prefix(os) << ' ';
+	this->right->print_prefix(os) << ' ';
+}
+
+template<typename Key>
+inline void Binary_tree<Key>::print_infix(std::ostream& os)
+{
+	this->left->print_prefix(os) << ' ';
+	os << this->value << ' ';
+	this->right->print_prefix(os) << ' ';
+}
+
+template<typename Key>
+inline void Binary_tree<Key>::print_postfix(std::ostream& os)
+{
+	this->left->print_prefix(os) << ' ';
+	this->right->print_prefix(os) << ' ';
+	os << this->value << ' ';
 }
 
 template<typename Key>
