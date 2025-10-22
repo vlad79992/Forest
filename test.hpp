@@ -1,22 +1,9 @@
-﻿//#define VERBOSE_OUTPUT
-
-#include <iostream>
-#include "AVL_tree.hpp"
-#include "Binary_tree.hpp"
-
+#pragma once
 #include <vector>
 #include <chrono>
 #include <random>
 
-void test_avl_tree(const std::vector<int>& data);
-std::vector<int> generate_random_array(int size);
-
-int main()
-{
-	setlocale(LC_ALL, "RU-ru");
-
-    test_avl_tree(generate_random_array(1e6));
-}
+#include "AVL_tree.hpp"
 
 std::vector<int> generate_random_array(int size) {
     std::vector<int> arr(size);

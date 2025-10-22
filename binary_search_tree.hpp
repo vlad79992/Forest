@@ -1,7 +1,6 @@
-#include <iostream>
-#include <vector>
+#pragma once
 
-using namespace std;
+#include <iostream>
 
 struct TreeNode {
     int value;
@@ -43,7 +42,7 @@ void print_tree(TreeNode* root) {
         return;
     }
     print_tree(root->left);
-    cout << root->value << endl;
+    std::cout << root->value << ' ';
     print_tree(root->right);
 }
 
@@ -102,15 +101,4 @@ TreeNode* delete_node_by_value(TreeNode* root, int value) {
         root->right = delete_node_by_value(root->right, min_node->value);
     }
     return root;
-}
-
-int main() {
-    TreeNode* root = new TreeNode(8);
-    vector<int> numbers = { 4, 2, 5, 10, 9, 11 };
-    for (int num : numbers) {
-        insert_node(root, num);
-    }
-    delete_node_by_value(root, 11);
-    print_tree(root);
-    delete_tree(root);
 }
