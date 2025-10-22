@@ -239,13 +239,13 @@ void AVL_tree<Key>::erase(const Key key)
 	if (key < this->value && this->left != nullptr)
 	{
 		this->left->erase(key);
-		if (this->left != nullptr && this->left->size == 0)
+		if (this->left != nullptr && this->left->tree_size == 0)
 			delete(this->left);
 	}
 	else if (key > this->value && this->right != nullptr)
 	{
 		this->right->erase(key);
-		if (this->right != nullptr && this->right->size == 0)
+		if (this->right != nullptr && this->right->tree_size == 0)
 			delete(this->right);
 	}
 
@@ -297,7 +297,7 @@ void AVL_tree<Key>::clear()
 template<typename Key>
 bool AVL_tree<Key>::empty()
 {
-	return size == 0;
+	return tree_size == 0;
 }
 
 template<typename Key>
@@ -316,22 +316,22 @@ template<typename Key>
 inline void AVL_tree<Key>::print_prefix(std::ostream& os)
 {
 	os << this->value << ' ';
-	this->left->print_prefix(os) << ' ';
-	this->right->print_prefix(os) << ' ';
+	if (this->left != nullptr) this->left->print_prefix(os) << ' ';
+	if (this->right != nullptr) this->right->print_prefix(os) << ' ';
 }
 
 template<typename Key>
 inline void AVL_tree<Key>::print_infix(std::ostream& os)
 {
-	this->left->print_prefix(os) << ' ';
+	if (this->left != nullptr) this->left->print_prefix(os) << ' ';
 	os << this->value << ' ';
-	this->right->print_prefix(os) << ' ';
+	if (this->right != nullptr) this->right->print_prefix(os) << ' ';
 }
 
 template<typename Key>
 inline void AVL_tree<Key>::print_postfix(std::ostream& os)
 {
-	this->left->print_prefix(os) << ' ';
-	this->right->print_prefix(os) << ' ';
+	if (this->left != nullptr) this->left->print_prefix(os) << ' ';
+	if (this->right != nullptr) this->right->print_prefix(os) << ' ';
 	os << this->value << ' ';
 }
