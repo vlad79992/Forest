@@ -80,6 +80,8 @@ inline void AVL_tree<Key>::right_turn()
 {
 	AVL_tree* root = this->left;
 
+	if (root == nullptr) return;
+
 	std::swap(*this, *root);
 
 	root->left = this->right;
@@ -90,7 +92,9 @@ inline void AVL_tree<Key>::right_turn()
 
 	this->right->tree_size = ((this->right->left == nullptr) ? (0) : (this->right->left->tree_size))
 		+ ((this->right->right == nullptr) ? (0) : (this->right->right->tree_size)) + 1;
-	this->tree_size = this->left->tree_size + this->right->tree_size + 1;
+	
+	this->tree_size = ((this->left == nullptr) ? (0) : (this->left->tree_size))
+		+ ((this->right == nullptr) ? (0) : (this->right->tree_size)) + 1;
 
 	this->tree_height = __max(((this->left == nullptr) ? (0) : (this->left->tree_height)),
 		((this->right == nullptr) ? (0) : (this->right->tree_height))) + 1;
@@ -101,17 +105,21 @@ inline void AVL_tree<Key>::left_turn()
 {
 	AVL_tree* root = this->right;
 
+	if (root == nullptr) return;
+
 	std::swap(*this, *root);
 
 	root->right = this->left;
 	this->left = root;
 
-	this->left->tree_height = __max(((this->left->left == nullptr) ? (0) : (this->left->right->tree_height)),
-		((this->left->left == nullptr) ? (0) : (this->left->left->tree_height))) + 1;
+	this->left->tree_height = __max(((this->left->left == nullptr) ? (0) : (this->left->left->tree_height)),
+		((this->left->right == nullptr) ? (0) : (this->left->right->tree_height))) + 1;
 
 	this->left->tree_size = ((this->left->left == nullptr) ? (0) : (this->left->left->tree_size))
 		+ ((this->left->right == nullptr) ? (0) : (this->left->right->tree_size)) + 1;
-	this->tree_size = this->left->tree_size + this->right->tree_size + 1;
+	
+	this->tree_size = ((this->left == nullptr) ? (0) : (this->left->tree_size))
+		+ ((this->right == nullptr) ? (0) : (this->right->tree_size)) + 1;
 
 	this->tree_height = __max(((this->left == nullptr) ? (0) : (this->left->tree_height)),
 		((this->right == nullptr) ? (0) : (this->right->tree_height))) + 1;
