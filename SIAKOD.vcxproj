@@ -136,6 +136,7 @@
     <ClInclude Include="binary_search_tree.hpp" />
     <ClInclude Include="Binary_tree.hpp" />
     <ClInclude Include="N-ary_tree.h" />
+    <ClInclude Include="RnB_tree.hpp" />
     <ClInclude Include="test.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

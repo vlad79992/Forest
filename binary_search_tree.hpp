@@ -1,8 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <stack>
+#include <unordered_set>
 
-using namespace std;
+//using namespace std; // нельзя писать using в заголовочных файлах!!!
 
 class BinarySearchTree {
 public:
@@ -18,23 +20,43 @@ public:
     };
     void delete_tree(TreeNode* root);
     TreeNode* insert_node(TreeNode* root, int value);
-    void inorder_traversal(TreeNode* root, vector<int>& output);
-    void preorder_traversal(TreeNode* root, vector<int>& output);
-    void postorder_traversal(TreeNode* root, vector<int>& output);
+    void inorder_traversal(TreeNode* root, std::vector<int>& output);
+    void preorder_traversal(TreeNode* root, std::vector<int>& output);
+    void postorder_traversal(TreeNode* root, std::vector<int>& output);
     TreeNode* maximum_node(TreeNode* root);
     TreeNode* minimum_node(TreeNode* root);
     bool isFound(TreeNode* root, int value);
     TreeNode* delete_node_by_value(TreeNode* root, int value);
-    vector<int> get_tree_data(TreeNode* root);
+    std::vector<int> get_tree_data(TreeNode* root);
 };
 
 inline void BinarySearchTree::delete_tree(TreeNode* root) {
-    if (!root) {
-        return;
+    if (!root) return;
+
+    std::stack<TreeNode*> stack;
+    std::unordered_set<TreeNode*> visited;
+    stack.push(root);
+
+    while (!stack.empty()) {
+        TreeNode* current = stack.top();
+        bool is_leaf_or_children_visited =
+            (!current->left || visited.count(current->left)) &&
+            (!current->right || visited.count(current->right));
+
+        if (is_leaf_or_children_visited) {
+            stack.pop();
+            delete current;
+            visited.insert(current);
+        }
+        else {
+            if (current->right && !visited.count(current->right)) {
+                stack.push(current->right);
+            }
+            if (current->left && !visited.count(current->left)) {
+                stack.push(current->left);
+            }
+        }
     }
-    delete_tree(root->left);
-    delete_tree(root->right);
-    delete root;
 }
 
 inline BinarySearchTree::TreeNode* BinarySearchTree::insert_node(TreeNode* root, int value) {
@@ -83,75 +105,128 @@ inline BinarySearchTree::TreeNode* BinarySearchTree::minimum_node(TreeNode* root
 }
 
 inline bool BinarySearchTree::isFound(TreeNode* root, int value) {
-    if (!root) {
-        return false;
+    TreeNode* current = root;
+    while (current) {
+        if (value == current->value) {
+            return true;
+        }
+        else if (value < current->value) {
+            current = current->left;
+        }
+        else {
+            current = current->right;
+        }
     }
-    if (value > root->value) {
-        return isFound(root->right, value);
-    }
-    if (value < root->value) {
-        return isFound(root->left, value);
-    }
-    return true;
+    return false;
 }
 
 inline BinarySearchTree::TreeNode* BinarySearchTree::delete_node_by_value(TreeNode* root, int value) {
-    if (!root) {
+    if (!root) return nullptr;
+
+    TreeNode* current = root;
+    TreeNode* parent = nullptr;
+
+    while (current && current->value != value) {
+        parent = current;
+        if (value < current->value) {
+            current = current->left;
+        }
+        else {
+            current = current->right;
+        }
+    }
+
+    if (!current) return root;
+
+    if (!current->left) {
+        TreeNode* new_child = current->right;
+        if (!parent) {
+            delete current;
+            return new_child;
+        }
+        if (parent->left == current) {
+            parent->left = new_child;
+        }
+        else {
+            parent->right = new_child;
+        }
+        delete current;
         return root;
     }
-    if (value > root->value) {
-        root->right = delete_node_by_value(root->right, value);
+
+    TreeNode* predecessor = current->left;
+    TreeNode* pred_parent = current;
+
+    while (predecessor->right) {
+        pred_parent = predecessor;
+        predecessor = predecessor->right;
     }
-    else if (value < root->value) {
-        root->left = delete_node_by_value(root->left, value);
+
+    current->value = predecessor->value;
+
+    if (pred_parent == current) {
+        pred_parent->left = predecessor->left;
     }
     else {
-        if (!root->left) {
-            TreeNode* temp = root->right;
-            delete root;
-            return temp;
-        }
-        if (!root->right) {
-            TreeNode* temp = root->left;
-            delete root;
-            return temp;
-        }
-        TreeNode* min_node = minimum_node(root->right);
-        root->value = min_node->value;
-        root->right = delete_node_by_value(root->right, min_node->value);
+        pred_parent->right = predecessor->left;
     }
+    delete predecessor;
+
     return root;
 }
 
-inline void BinarySearchTree::inorder_traversal(TreeNode* root, vector<int>& output) {
-    if (!root) {
-        return;
+inline void BinarySearchTree::inorder_traversal(TreeNode* root, std::vector<int>& output) {
+    std::stack<TreeNode*> stack;
+    TreeNode* current = root;
+
+    while (current || !stack.empty()) {
+        while (current) {
+            stack.push(current);
+            current = current->left;
+        }
+        current = stack.top();
+        stack.pop();
+        output.push_back(current->value);
+        current = current->right;
     }
-    inorder_traversal(root->left, output);
-    output.push_back(root->value);
-    inorder_traversal(root->right, output);
 }
 
-inline void BinarySearchTree::preorder_traversal(TreeNode* root, vector<int>& output) {
-    if (!root) {
-        return;
+inline void BinarySearchTree::preorder_traversal(TreeNode* root, std::vector<int>& output) {
+    if (!root) return;
+    std::stack<TreeNode*> stack;
+    stack.push(root);
+
+    while (!stack.empty()) {
+        TreeNode* current = stack.top();
+        stack.pop();
+        output.push_back(current->value);
+        if (current->right) stack.push(current->right);
+        if (current->left) stack.push(current->left);
     }
-    output.push_back(root->value);
-    preorder_traversal(root->left, output);
-    preorder_traversal(root->right, output);
 }
 
-inline void BinarySearchTree::postorder_traversal(TreeNode* root, vector<int>& output) {
-    if (!root) {
-        return;
+inline void BinarySearchTree::postorder_traversal(TreeNode* root, std::vector<int>& output) {
+    if (!root) return;
+    std::stack<TreeNode*> stack1, stack2;
+    stack1.push(root);
+
+    while (!stack1.empty()) {
+        TreeNode* current = stack1.top();
+        stack1.pop();
+        stack2.push(current);
+
+        if (current->left) stack1.push(current->left);
+        if (current->right) stack1.push(current->right);
     }
-    postorder_traversal(root->left, output);
-    postorder_traversal(root->right, output);
-    output.push_back(root->value);
+
+    while (!stack2.empty()) {
+        output.push_back(stack2.top()->value);
+        stack2.pop();
+    }
 }
 
-inline vector<int> BinarySearchTree::get_tree_data(TreeNode* root) {
-    vector<int> output;
+inline std::vector<int> BinarySearchTree::get_tree_data(TreeNode* root) {
+    std::vector<int> output;
     inorder_traversal(root, output);
     return output;
 }

@@ -1,168 +1,227 @@
 #pragma once
 #include <iostream>
+#include <stack>
+#include <utility>
 
 template<typename Key>
-class Binary_tree
-{
+class Binary_tree {
 private:
-	Key value;
-	Binary_tree* left = nullptr;
-	Binary_tree* right = nullptr;
-	int size = 0;
+    struct Node {
+        Key key;
+        Node* left;
+        Node* right;
+        explicit Node(const Key& k) : key(k), left(nullptr), right(nullptr) {}
+        explicit Node(Key&& k) : key(std::move(k)), left(nullptr), right(nullptr) {}
+    };
 
-	void append_tree(Binary_tree* tree);
+    Node* root = nullptr;
+
 public:
-	void insert(Key key);
-	void erase(Key key);
-	bool contains(Key key);
-	void clear();
+    Binary_tree() = default;
+    ~Binary_tree() { clear(); }
 
-	void print_prefix(std::ostream& os);
-	void print_infix(std::ostream& os);
-	void print_postfix(std::ostream& os);
+    void insert(const Key& key);
+    void insert(Key&& key);
+    void erase(const Key& key);
+    bool contains(const Key& key) const;
+    void clear();
+    void print_prefix(std::ostream& os = std::cout) const;
+    void print_infix(std::ostream& os = std::cout) const;
+    void print_postfix(std::ostream& os = std::cout) const;
 };
 
 template<typename Key>
-inline void Binary_tree<Key>::append_tree(Binary_tree* tree)
-{
-	if (tree == nullptr) return;
-	if (tree->value < this->value)
-	{
-		if (this->left == nullptr)
-		{
-			this->left = tree;
-		}
-		else
-		{
-			this->left->append_tree(tree);
-		}
-	}
-	else
-	{
-		if (this->right == nullptr)
-		{
-			this->right = tree;
-		}
-		else
-		{
-			this->right->append_tree(tree);
-		}
-	}
-	this->size = ((this->left == nullptr) ? (0) : (this->left->size)) +
-		((this->right == nullptr) ? (0) : (this->right->size)) + 1;
+void Binary_tree<Key>::insert(const Key& key) {
+    if (!root) {
+        root = new Node(key);
+        return;
+    }
+
+    Node* current = root;
+    while (true) {
+        if (key < current->key) {
+            if (!current->left) {
+                current->left = new Node(key);
+                return;
+            }
+            current = current->left;
+        }
+        else if (key > current->key) {
+            if (!current->right) {
+                current->right = new Node(key);
+                return;
+            }
+            current = current->right;
+        }
+        else {
+            return;
+        }
+    }
 }
 
 template<typename Key>
-inline void Binary_tree<Key>::print_prefix(std::ostream& os)
-{
-	os << this->value << ' ';
-	this->left->print_prefix(os) << ' ';
-	this->right->print_prefix(os) << ' ';
+void Binary_tree<Key>::insert(Key&& key) {
+    if (!root) {
+        root = new Node(std::move(key));
+        return;
+    }
+
+    Node* current = root;
+    while (true) {
+        if (key < current->key) {
+            if (!current->left) {
+                current->left = new Node(std::move(key));
+                return;
+            }
+            current = current->left;
+        }
+        else if (key > current->key) {
+            if (!current->right) {
+                current->right = new Node(std::move(key));
+                return;
+            }
+            current = current->right;
+        }
+        else {
+            return;
+        }
+    }
 }
 
 template<typename Key>
-inline void Binary_tree<Key>::print_infix(std::ostream& os)
-{
-	this->left->print_prefix(os) << ' ';
-	os << this->value << ' ';
-	this->right->print_prefix(os) << ' ';
+void Binary_tree<Key>::erase(const Key& key) {
+    Node* current = root;
+    Node* parent = nullptr;
+
+    while (current != nullptr && current->key != key) {
+        parent = current;
+        if (key < current->key) {
+            current = current->left;
+        }
+        else {
+            current = current->right;
+        }
+    }
+    if (!current) return;
+
+    if (current->left == nullptr && current->right == nullptr) {
+        if (!parent) {
+            root = nullptr;
+        }
+        else if (parent->left == current) {
+            parent->left = nullptr;
+        }
+        else {
+            parent->right = nullptr;
+        }
+        delete current;
+        return;
+    }
+
+    if (current->left == nullptr || current->right == nullptr) {
+        Node* child = (current->left != nullptr) ? current->left : current->right;
+        if (!parent) {
+            root = child;
+        }
+        else if (parent->left == current) {
+            parent->left = child;
+        }
+        else {
+            parent->right = child;
+        }
+        delete current;
+        return;
+    }
+
+    Node* successor = current->right;
+    Node* successor_parent = current;
+    while (successor->left) {
+        successor_parent = successor;
+        successor = successor->left;
+    }
+    current->key = successor->key;
+
+    if (successor_parent->left == successor) {
+        successor_parent->left = successor->right;
+    }
+    else {
+        successor_parent->right = successor->right;
+    }
+    delete successor;
 }
 
 template<typename Key>
-inline void Binary_tree<Key>::print_postfix(std::ostream& os)
-{
-	this->left->print_prefix(os) << ' ';
-	this->right->print_prefix(os) << ' ';
-	os << this->value << ' ';
+bool Binary_tree<Key>::contains(const Key& key) const {
+    Node* current = root;
+    while (current) {
+        if (key == current->key) return true;
+        current = (key < current->key) ? current->left : current->right;
+    }
+    return false;
 }
 
 template<typename Key>
-inline void Binary_tree<Key>::insert(Key key)
-{
-	if (this->size == 0)
-	{
-		this->value = key;
-	}
-	else
-	{
-		if (key < this->value)
-		{
-			if (this->left == nullptr) this->left = new Binary_tree;
-			this->left->insert(key);
-		}
-		if (key > this->value)
-		{
-			if (this->right == nullptr) this->right = new Binary_tree;
-			this->right->insert(key);
-		}
-	}
-	this->size = ((this->left == nullptr) ? (0) : (this->left->size)) +
-		((this->right == nullptr) ? (0) : (this->right->size)) + 1;
+void Binary_tree<Key>::clear() {
+    if (!root) return;
+    std::stack<Node*> stack;
+    stack.push(root);
+    while (!stack.empty()) {
+        Node* node = stack.top();
+        stack.pop();
+        if (node->left) stack.push(node->left);
+        if (node->right) stack.push(node->right);
+        delete node;
+    }
+    root = nullptr;
 }
 
 template<typename Key>
-inline void Binary_tree<Key>::erase(Key key)
-{
-	if (key < this->value && this->left != nullptr)
-	{
-		this->left->erase(key);
-		if (this->left != nullptr && this->left->size == 0)
-			delete(this->left);
-	}
-	else if (key > this->value && this->right != nullptr)
-	{
-		this->right->erase(key);
-		if (this->right != nullptr && this->right->size == 0)
-			delete(this->right);
-	}
-
-	if (key == this->value)
-	{
-		if (this->left == nullptr && this->right == nullptr)
-			return this->clear();
-
-		if ((this->left == nullptr ? 0 : this->left->size) > (this->right == nullptr ? 0 : this->right->size))
-		{
-			Binary_tree* tmp = this->right;
-			*this = *this->left;
-			append_tree(tmp);
-		}
-		else
-		{
-			Binary_tree* tmp = this->left;
-			*this = *this->right;
-			append_tree(tmp);
-		}
-
-		this->size = ((this->left == nullptr) ? (0) : (this->left->size)) +
-			((this->right == nullptr) ? (0) : (this->right->size)) + 1;
-	}
+void Binary_tree<Key>::print_prefix(std::ostream& os) const {
+    if (!root) return;
+    std::stack<Node*> stack;
+    stack.push(root);
+    while (!stack.empty()) {
+        Node* node = stack.top();
+        stack.pop();
+        os << node->key << ' ';
+        if (node->right) stack.push(node->right);
+        if (node->left) stack.push(node->left);
+    }
 }
 
 template<typename Key>
-inline bool Binary_tree<Key>::contains(Key key)
-{
-	if (this->size == 0) return false;
-	if (key == this->value) return true;
-	if (key >= this->value && this->right != nullptr) return this->right->contains(key);
-	if (key < this->value && this->left != nullptr) return this->left->contains(key);
-	return false;
+void Binary_tree<Key>::print_infix(std::ostream& os) const {
+    if (!root) return;
+    std::stack<Node*> stack;
+    Node* current = root;
+    while (current || !stack.empty()) {
+        while (current) {
+            stack.push(current);
+            current = current->left;
+        }
+        current = stack.top();
+        stack.pop();
+        os << current->key << ' ';
+        current = current->right;
+    }
 }
 
 template<typename Key>
-inline void Binary_tree<Key>::clear()
-{
-	if (this->left != nullptr)
-	{
-		this->left->clear();
-		delete(this->left);
-	}
-	if (this->right != nullptr)
-	{
-		this->right->clear();
-		delete(this->right);
-	}
-	left = nullptr;
-	right = nullptr;
-	size = 0;
+void Binary_tree<Key>::print_postfix(std::ostream& os) const {
+    if (!root) return;
+    std::stack<Node*> stack1;
+    std::stack<Node*> stack2;
+    stack1.push(root);
+    while (!stack1.empty()) {
+        Node* node = stack1.top();
+        stack1.pop();
+        stack2.push(node);
+        if (node->left) stack1.push(node->left);
+        if (node->right) stack1.push(node->right);
+    }
+    while (!stack2.empty()) {
+        Node* node = stack2.top();
+        stack2.pop();
+        os << node->key << ' ';
+    }
 }
