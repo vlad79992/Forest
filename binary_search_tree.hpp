@@ -165,8 +165,18 @@ inline void postorder_traversal(TreeNode* root, vector<int>& output) {
     output.push_back(root->value);
 }
 
-inline vector<int> get_tree_data(TreeNode* root) {
+inline vector<int> get_tree_data(TreeNode* root, int traversal_select) {
     vector<int> output;
-    inorder_traversal(root, output);
+    switch (traversal_select) {
+        case 1:
+            inorder_traversal(root, output);
+            break;
+        case 2:
+            preorder_traversal(root, output);
+            break;
+        case 3:
+            postorder_traversal(root, output);
+            break;
+    }
     return output;
 }
