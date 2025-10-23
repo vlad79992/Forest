@@ -63,5 +63,9 @@ void test_binary_search_tree() {
         insert_node(root, i);
     }
     cout << isFound(root, 7) << endl;
+    vector<int> tree_data = get_tree_data(root);
+    for (int num: tree_data) {
+        cout << num << endl;
+    }
     delete_tree(root);
 }
