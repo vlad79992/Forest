@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <stack>
 
 using namespace std;
 
@@ -14,6 +15,12 @@ struct TreeNode {
         right = nullptr;
     }
 };
+
+class BinarySearchTree {
+public:
+
+};
+
 inline void delete_tree(TreeNode* root) {
     if (!root) {
         return;
@@ -116,21 +123,37 @@ inline TreeNode* delete_node_by_value(TreeNode* root, int value) {
 }
 
 inline void inorder_traversal(TreeNode* root, vector<int>& output) {
-    if (!root) {
-        return;
+    stack<TreeNode*> stack;
+    TreeNode* current = root;
+
+    while (current || !stack.empty()) {
+        while (current) {
+            stack.push(current);
+            current = current->left;
+        }
+        current = stack.top();
+        stack.pop();
+        output.push_back(current->value);
+        current = current->right;
     }
-    inorder_traversal(root->left, output);
-    output.push_back(root->value);
-    inorder_traversal(root->right, output);
+
 }
 
 inline void preorder_traversal(TreeNode* root, vector<int>& output) {
     if (!root) {
         return;
     }
-    output.push_back(root->value);
-    preorder_traversal(root->left, output);
-    preorder_traversal(root->right, output);
+
+    stack<TreeNode*> stack;
+    stack.push(root);
+
+    while (!stack.empty()) {
+        TreeNode* node = stack.top();
+        stack.pop();
+        output.push_back(node->value);
+        if (node->right) stack.push(node->right);
+        if (node->left) stack.push(node->left);
+    }
 }
 
 inline void postorder_traversal(TreeNode* root, vector<int>& output) {
@@ -142,8 +165,18 @@ inline void postorder_traversal(TreeNode* root, vector<int>& output) {
     output.push_back(root->value);
 }
 
-inline vector<int> get_tree_data(TreeNode* root) {
+inline vector<int> get_tree_data(TreeNode* root, int traversal_select) {
     vector<int> output;
-    inorder_traversal(root, output);
+    switch (traversal_select) {
+        case 1:
+            inorder_traversal(root, output);
+            break;
+        case 2:
+            preorder_traversal(root, output);
+            break;
+        case 3:
+            postorder_traversal(root, output);
+            break;
+    }
     return output;
 }
