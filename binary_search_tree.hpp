@@ -1,19 +1,34 @@
 #pragma once
 
-#include <iostream>
+#include <vector>
 
-struct TreeNode {
-    int value;
-    TreeNode* left;
-    TreeNode* right;
-    TreeNode(int node_value) {
-        value = node_value;
-        left = nullptr;
-        right = nullptr;
-    }
+using namespace std;
+
+class BinarySearchTree {
+public:
+    struct TreeNode {
+        int value;
+        TreeNode* left;
+        TreeNode* right;
+        TreeNode(int node_value) {
+            value = node_value;
+            left = nullptr;
+            right = nullptr;
+        }
+    };
+    void delete_tree(TreeNode* root);
+    TreeNode* insert_node(TreeNode* root, int value);
+    void inorder_traversal(TreeNode* root, vector<int>& output);
+    void preorder_traversal(TreeNode* root, vector<int>& output);
+    void postorder_traversal(TreeNode* root, vector<int>& output);
+    TreeNode* maximum_node(TreeNode* root);
+    TreeNode* minimum_node(TreeNode* root);
+    bool isFound(TreeNode* root, int value);
+    TreeNode* delete_node_by_value(TreeNode* root, int value);
+    vector<int> get_tree_data(TreeNode* root);
 };
 
-void delete_tree(TreeNode* root) {
+inline void BinarySearchTree::delete_tree(TreeNode* root) {
     if (!root) {
         return;
     }
@@ -22,31 +37,36 @@ void delete_tree(TreeNode* root) {
     delete root;
 }
 
-TreeNode* insert_node(TreeNode* root, int value) {
-    TreeNode* new_node = new TreeNode(value);
+inline BinarySearchTree::TreeNode* BinarySearchTree::insert_node(TreeNode* root, int value) {
+    TreeNode* node = new TreeNode(value);
     if (!root) {
-        root = new_node;
-        return root;
+        return node;
     }
-    if (value > root->value) {
-        root->right = insert_node(root->right, value);
+    TreeNode* current = root;
+    TreeNode* parent = nullptr;
+    while (current) {
+        parent = current;
+        if (value > current->value) {
+            current = current->right;
+        }
+        else if (value < current->value) {
+            current = current->left;
+        }
+        else {
+            delete node;
+            return root;
+        }
+    }
+    if (value > parent->value) {
+        parent->right = node;
     }
     else {
-        root->left = insert_node(root->left, value);
+        parent->left = node;
     }
-    return root;
+    return node;
 }
 
-void print_tree(TreeNode* root) {
-    if (!root) {
-        return;
-    }
-    print_tree(root->left);
-    std::cout << root->value << ' ';
-    print_tree(root->right);
-}
-
-TreeNode* maximum_node(TreeNode* root) {
+inline BinarySearchTree::TreeNode* BinarySearchTree::maximum_node(TreeNode* root) {
     TreeNode* current = root;
     while (current->right) {
         current = current->right;
@@ -54,15 +74,15 @@ TreeNode* maximum_node(TreeNode* root) {
     return current;
 }
 
-TreeNode* minimum_node(TreeNode* root) {
+inline BinarySearchTree::TreeNode* BinarySearchTree::minimum_node(TreeNode* root) {
     TreeNode* current = root;
-    while (current->left && current->left) {
+    while (current->left) {
         current = current->left;
     }
     return current;
 }
 
-bool isFound(TreeNode* root, int value) {
+inline bool BinarySearchTree::isFound(TreeNode* root, int value) {
     if (!root) {
         return false;
     }
@@ -75,7 +95,7 @@ bool isFound(TreeNode* root, int value) {
     return true;
 }
 
-TreeNode* delete_node_by_value(TreeNode* root, int value) {
+inline BinarySearchTree::TreeNode* BinarySearchTree::delete_node_by_value(TreeNode* root, int value) {
     if (!root) {
         return root;
     }
@@ -101,4 +121,37 @@ TreeNode* delete_node_by_value(TreeNode* root, int value) {
         root->right = delete_node_by_value(root->right, min_node->value);
     }
     return root;
+}
+
+inline void BinarySearchTree::inorder_traversal(TreeNode* root, vector<int>& output) {
+    if (!root) {
+        return;
+    }
+    inorder_traversal(root->left, output);
+    output.push_back(root->value);
+    inorder_traversal(root->right, output);
+}
+
+inline void BinarySearchTree::preorder_traversal(TreeNode* root, vector<int>& output) {
+    if (!root) {
+        return;
+    }
+    output.push_back(root->value);
+    preorder_traversal(root->left, output);
+    preorder_traversal(root->right, output);
+}
+
+inline void BinarySearchTree::postorder_traversal(TreeNode* root, vector<int>& output) {
+    if (!root) {
+        return;
+    }
+    postorder_traversal(root->left, output);
+    postorder_traversal(root->right, output);
+    output.push_back(root->value);
+}
+
+inline vector<int> BinarySearchTree::get_tree_data(TreeNode* root) {
+    vector<int> output;
+    inorder_traversal(root, output);
+    return output;
 }

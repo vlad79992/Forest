@@ -12,4 +12,5 @@ int main()
 	setlocale(LC_ALL, "RU-ru");
 
     test_avl_tree(generate_random_array(1e6));
+	test_binary_search_tree();
 }
