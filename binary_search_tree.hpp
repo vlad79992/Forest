@@ -2,7 +2,7 @@
 
 #include <vector>
 
-using namespace std;
+//using namespace std;
 
 struct TreeNode {
     int value;
@@ -115,7 +115,7 @@ inline TreeNode* delete_node_by_value(TreeNode* root, int value) {
     return root;
 }
 
-inline void inorder_traversal(TreeNode* root, vector<int>& output) {
+inline void inorder_traversal(TreeNode* root, std::vector<int>& output) {
     if (!root) {
         return;
     }
@@ -124,7 +124,7 @@ inline void inorder_traversal(TreeNode* root, vector<int>& output) {
     inorder_traversal(root->right, output);
 }
 
-inline void preorder_traversal(TreeNode* root, vector<int>& output) {
+inline void preorder_traversal(TreeNode* root, std::vector<int>& output) {
     if (!root) {
         return;
     }
@@ -133,7 +133,7 @@ inline void preorder_traversal(TreeNode* root, vector<int>& output) {
     preorder_traversal(root->right, output);
 }
 
-inline void postorder_traversal(TreeNode* root, vector<int>& output) {
+inline void postorder_traversal(TreeNode* root, std::vector<int>& output) {
     if (!root) {
         return;
     }
@@ -142,8 +142,8 @@ inline void postorder_traversal(TreeNode* root, vector<int>& output) {
     output.push_back(root->value);
 }
 
-inline vector<int> get_tree_data(TreeNode* root) {
-    vector<int> output;
+inline std::vector<int> get_tree_data(TreeNode* root) {
+    std::vector<int> output;
     inorder_traversal(root, output);
     return output;
 }
