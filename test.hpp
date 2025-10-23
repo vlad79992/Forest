@@ -55,3 +55,12 @@ void test_avl_tree(const std::vector<int>& data) {
 
     std::cout << std::endl;
 }
+
+void test_binary_search_tree() {
+    BinarySearchTree tree;
+    auto* root = new BinarySearchTree::TreeNode(0);
+    for (int i = 0; i < 10000; i++) {
+        tree.insert_node(root, i);
+    }
+    tree.delete_tree(root);
+}
