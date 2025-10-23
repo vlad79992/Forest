@@ -4,6 +4,7 @@
 #include <random>
 
 #include "AVL_tree.hpp"
+#include <binary_search_tree.hpp>
 
 std::vector<int> generate_random_array(int size) {
     std::vector<int> arr(size);
@@ -57,10 +58,10 @@ void test_avl_tree(const std::vector<int>& data) {
 }
 
 void test_binary_search_tree() {
-    BinarySearchTree tree;
-    auto* root = new BinarySearchTree::TreeNode(0);
+    auto* root = new TreeNode(0);
     for (int i = 0; i < 10000; i++) {
-        tree.insert_node(root, i);
+        insert_node(root, i);
     }
-    tree.delete_tree(root);
+    cout << isFound(root, 7) << endl;
+    delete_tree(root);
 }
