@@ -6,5 +6,4 @@ set(CMAKE_CXX_STANDARD 14)
 include_directories(.)
 
 add_executable(Forest
-        source.cpp
         source.cpp)
