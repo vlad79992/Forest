@@ -62,6 +62,6 @@ void test_binary_search_tree() {
     for (int i = 0; i < 10000; i++) {
         insert_node(root, i);
     }
-    cout << isFound(root, 7) << endl;
+    std::cout << isFound(root, 7) << std::endl; // Забыли std:: -Aidamir
     delete_tree(root);
 }
