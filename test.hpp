@@ -4,7 +4,8 @@
 #include <random>
 
 #include "AVL_tree.hpp"
-#include <binary_search_tree.hpp>
+#include "binary_search_tree.hpp"
+#include "Binary_tree.hpp"
 
 std::vector<int> generate_random_array(int size) {
     std::vector<int> arr(size);
@@ -58,10 +59,61 @@ void test_avl_tree(const std::vector<int>& data) {
 }
 
 void test_binary_search_tree() {
-    auto* root = new TreeNode(0);
-    for (int i = 0; i < 10000; i++) {
-        insert_node(root, i);
+    TreeNode* tree = new TreeNode(0);
+
+    auto start_insert = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < 1000000; ++i) {
+        if (i % 1000 == 0)
+            std::cout << i << std::endl;
+        insert_node(tree, i);
     }
-    cout << isFound(root, 7) << endl;
-    delete_tree(root);
+    auto end_insert = std::chrono::high_resolution_clock::now();
+    auto duration_insert = std::chrono::duration_cast<std::chrono::milliseconds>(end_insert - start_insert);
+    std::cout << "Время вставки 1 млн элементов: " << duration_insert.count() << " мс\n";
+
+
+    auto start_search = std::chrono::high_resolution_clock::now();
+    bool found = isFound(tree, 500000);
+    auto end_search = std::chrono::high_resolution_clock::now();
+    auto duration_search = std::chrono::duration_cast<std::chrono::microseconds>(end_search - start_search);
+    std::cout << "Поиск элемента 500000: " << (found ? "найден" : "не найден")
+        << ", время: " << duration_search.count() << " мкс\n";
+
+    auto start_clear = std::chrono::high_resolution_clock::now();
+    delete_tree(tree);
+    auto end_clear = std::chrono::high_resolution_clock::now();
+    auto duration_clear = std::chrono::duration_cast<std::chrono::milliseconds>(end_clear - start_clear);
+    std::cout << "Время очистки дерева: " << duration_clear.count() << " мс\n";
+
+    return;
 }
+
+void test_binary_tree()
+{
+    Binary_tree<int> tree;
+
+    auto start_insert = std::chrono::high_resolution_clock::now();
+    for (int i = 0; i < 1e6; ++i) {
+        if (i % 1000 == 0)
+
+            tree.insert(i);
+    }
+    auto end_insert = std::chrono::high_resolution_clock::now();
+    auto duration_insert = std::chrono::duration_cast<std::chrono::milliseconds>(end_insert - start_insert);
+
+    auto start_search = std::chrono::high_resolution_clock::now();
+    bool found = tree.contains(500000);
+    auto end_search = std::chrono::high_resolution_clock::now();
+    auto duration_search = std::chrono::duration_cast<std::chrono::microseconds>(end_search - start_search);
+
+    auto start_clear = std::chrono::high_resolution_clock::now();
+    tree.clear();
+    auto end_clear = std::chrono::high_resolution_clock::now();
+    auto duration_clear = std::chrono::duration_cast<std::chrono::milliseconds>(end_clear - start_clear);
+
+    std::cout << "Время вставки 1 млн элементов: " << duration_insert.count() << " мс\n";
+    std::cout << "Поиск элемента 500000: " << (found ? "найден" : "не найден")
+        << ", время: " << duration_search.count() << " мкс\n";
+    std::cout << "Время очистки дерева: " << duration_clear.count() << " мс\n";
+}
+
